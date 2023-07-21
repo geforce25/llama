@@ -1,13 +1,16 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-# This software may be used and distributed according to the terms of the Llama 2 Community License Agreement.
-
 from typing import Optional
-
 import fire
-
 from llama import Llama
 
+#-------------------------------------------------------------------------------
+
 COMMAND_EXIT="exit"
+
+#-------------------------------------------------------------------------------
+
+FLAG_USE_MEMORY=True
+
+#-------------------------------------------------------------------------------
 
 def main(
     ckpt_dir: str,
@@ -26,6 +29,7 @@ def main(
     )
 
     print(f"Type '{COMMAND_EXIT}' to exit.")
+    dialogs = [[]]
 
     while True:
         print("Enter prompt: ", end='' )
@@ -33,7 +37,14 @@ def main(
         if prompt.strip() == COMMAND_EXIT:
             break
 
-        dialogs = [[{"role": "user", "content": f"{prompt}"}]]
+        # dialogs = [[{"role": "user", "content": f"{prompt}"}]]
+
+        prompt_structure = {"role": "user", "content": f"{prompt}"}
+
+        if FLAG_USE_MEMORY:
+            dialogs[0].append({"role": "user", "content": f"{prompt}"})
+        else:
+            dialogs[0] = [prompt_structure]
 
         results = generator.chat_completion(
             dialogs,  # type: ignore
@@ -42,13 +53,24 @@ def main(
             top_p=top_p,
         )
 
-        for dialog, result in zip(dialogs, results):
-            for msg in dialog:
-                print(f"{msg['role'].capitalize()}: {msg['content']}\n")
-            print(
-                f"> {result['generation']['role'].capitalize()}: {result['generation']['content']}"
-            )
-            print("\n==================================\n")
+        result_structure = results[0]['generation']
+
+        print(f"> {result_structure['role'].capitalize()}: {result_structure['content']}")
+        print("\n==================================\n")
+
+        if FLAG_USE_MEMORY:
+            dialogs[0].append(result_structure)
+
+        # for dialog, result in zip(dialogs, results):
+        #     for msg in dialog:
+        #         print(f"{msg['role'].capitalize()}: {msg['content']}\n")
+        #     print(
+        #         f"> {result['generation']['role'].capitalize()}: {result['generation']['content']}"
+        #     )
+        #     print("\n==================================\n")
+
+#-------------------------------------------------------------------------------
+# Entry point
 
 if __name__ == "__main__":
     fire.Fire(main)

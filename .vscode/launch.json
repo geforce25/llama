@@ -19,7 +19,7 @@
             "--tokenizer_path",
             "/home/ai/models/data/tokenizer.model",
             "--max_seq_len",
-            "512",
+            "2048",
             "--max_batch_size",
             "4"
         ],
