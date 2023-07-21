@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Interactive Chat",
+            "type": "python",
+            "request": "launch",
+            "program": "/usr/local/bin/torchrun",
+            "cwd": "/home/ai/llama",
+            "args": [
+                "--nproc_per_node",
+            "1",
+            "interactive_chat.py",
+            "--ckpt_dir",
+            "/home/ai/models/data/llama-2-7b-chat/",
+            "--tokenizer_path",
+            "/home/ai/models/data/tokenizer.model",
+            "--max_seq_len",
+            "512",
+            "--max_batch_size",
+            "4"
+        ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
