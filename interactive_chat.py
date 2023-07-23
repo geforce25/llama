@@ -1,4 +1,5 @@
 from typing import Optional
+import time
 import fire
 from llama import Llama
 
@@ -37,14 +38,14 @@ def main(
         if prompt.strip() == COMMAND_EXIT:
             break
 
-        # dialogs = [[{"role": "user", "content": f"{prompt}"}]]
-
         prompt_structure = {"role": "user", "content": f"{prompt}"}
 
         if FLAG_USE_MEMORY:
             dialogs[0].append({"role": "user", "content": f"{prompt}"})
         else:
             dialogs[0] = [prompt_structure]
+
+        performance_timer_start = time.time()
 
         results = generator.chat_completion(
             dialogs,  # type: ignore
@@ -53,21 +54,15 @@ def main(
             top_p=top_p,
         )
 
+        performance_timer_elapsed = time.time() - performance_timer_start
+
         result_structure = results[0]['generation']
 
-        print(f"> {result_structure['role'].capitalize()}: {result_structure['content']}")
+        print(f"> {result_structure['role'].capitalize()}: {result_structure['content']} [{performance_timer_elapsed} s]")
         print("\n==================================\n")
 
         if FLAG_USE_MEMORY:
             dialogs[0].append(result_structure)
-
-        # for dialog, result in zip(dialogs, results):
-        #     for msg in dialog:
-        #         print(f"{msg['role'].capitalize()}: {msg['content']}\n")
-        #     print(
-        #         f"> {result['generation']['role'].capitalize()}: {result['generation']['content']}"
-        #     )
-        #     print("\n==================================\n")
 
 #-------------------------------------------------------------------------------
 # Entry point
